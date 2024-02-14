@@ -1,0 +1,46 @@
+{
+    "name": "compound-protocol",
+    "version": "0.2.1",
+    "description": "The Compound Money Market",
+    "main": "index.js",
+    "scripts": {
+        "build": "npx hardhat compile",
+        "test": "npx hardhat test",
+        "coverage": "npx hardhat coverage",
+        "deploy:ganache": "npx hardhat deploy --network ganache",
+        "deploy:optimism": "npx hardhat deploy --network optimism",
+        "deploy:blast": "npx hardhat deploy --network blast_sepolia",
+        "deploy:fantom": "npx hardhat deploy --network fantom"
+    },
+    "repository": "git@github.com:compound-finance/compound-protocol.git",
+    "author": "Compound Finance",
+    "license": "UNLICENSED",
+    "devDependencies": {
+        "@nomicfoundation/hardhat-chai-matchers": "^1.0.6",
+        "@nomicfoundation/hardhat-network-helpers": "^1.0.6",
+        "@nomiclabs/hardhat-ethers": "npm:hardhat-deploy-ethers@^0.3.0-beta.13",
+        "@nomiclabs/hardhat-waffle": "^2.0.3",
+        "@openzeppelin/contracts": "^4.8.0",
+        "@openzeppelin/contracts-upgradeable": "^4.8.2",
+        "@openzeppelin/hardhat-upgrades": "^1.21.0",
+        "@typechain/hardhat": "^6.1.4",
+        "@types/chai": "^4.3.4",
+        "@types/mocha": "^10.0.0",
+        "chai": "^4.3.7",
+        "dotenv": "^16.0.3",
+        "ethereum-waffle": "^4.0.10",
+        "ethers": "^5.7.2",
+        "hardhat": "^2.19.5",
+        "hardhat-deploy": "^0.11.45",
+        "hardhat-deploy-ethers": "^0.3.0-beta.13",
+        "solidity-coverage": "^0.7.22",
+        "ts-node": "^10.9.1"
+    },
+    "resolutions": {
+        "scrypt.js": "https://registry.npmjs.org/@compound-finance/ethereumjs-wallet/-/ethereumjs-wallet-0.6.3.tgz",
+        "**/ganache-core": "github:compound-finance/ganache-core.git#jflatow/unbreak-fork"
+    },
+    "dependencies": {
+        "@pythnetwork/pyth-sdk-solidity": "^2.4.0"
+    }
+}
