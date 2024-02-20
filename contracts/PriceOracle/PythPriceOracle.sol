@@ -29,8 +29,20 @@ contract PythPriceOracle is PriceOracle {
         pyth = _pyth;
     }
 
+    function updateFeeds(bytes[] calldata priceUpdateData) external payable {
+        // Update the prices to the latest available values and pay the required fee for it. The `priceUpdateData` data
+        // should be retrieved from our off-chain Price Service API using the `pyth-evm-js` package.
+        // See section "How Pyth Works on EVM Chains" below for more information.
+        uint fee = pyth.getUpdateFee(priceUpdateData);
+        pyth.updatePriceFeeds{value: fee}(priceUpdateData);
+
+        // refund remaining eth
+        (bool success, ) = payable(msg.sender).call{value: address(this).balance}("");
+        require(success, "not ok");
+    }
+
     // price in 18 decimals
-    function getPrice(CToken cToken) public view returns (uint256) {
+    function getPrice(CToken cToken) external view returns (uint256) {
         string memory symbol = cToken.symbol();
 
         (uint256 price, ) = _getLatestPrice(symbol);
@@ -51,8 +63,24 @@ contract PythPriceOracle is PriceOracle {
         return (price * 1e18 / baseUnits[symbol]);
     }
 
+    function getRawPrice(CToken cToken) external view returns (PythStructs.Price memory data) {
+        string memory symbol = cToken.symbol();
+
+        data = pyth.getPrice(
+            assetIds[symbol]
+        );
+    }
+
+    function getRawPriceUnsafe(CToken cToken) external view returns (PythStructs.Price memory data) {
+        string memory symbol = cToken.symbol();
+
+        data = pyth.getPriceUnsafe(
+            assetIds[symbol]
+        );
+    }
+
     function _getLatestPrice(string memory symbol)
-        public
+        internal
         view
         returns (uint256, uint256)
     {
@@ -67,21 +95,5 @@ contract PythPriceOracle is PriceOracle {
 
 
         return (uPrice, data.publishTime);
-    }
-
-    function getRawPrice(CToken cToken) public view returns (PythStructs.Price memory data) {
-        string memory symbol = cToken.symbol();
-
-        data = pyth.getPrice(
-            assetIds[symbol]
-        );
-    }
-
-    function getRawPriceUnsafe(CToken cToken) public view returns (PythStructs.Price memory data) {
-        string memory symbol = cToken.symbol();
-
-        data = pyth.getPriceUnsafe(
-            assetIds[symbol]
-        );
     }
 }
