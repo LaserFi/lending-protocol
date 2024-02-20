@@ -27,7 +27,7 @@ const func: DeployFunction = async ({
         [key: string]: IModelDefinition;
     } = {
         StableRateModel: {
-            blocksPerYear: 365 * 24 * 60 * 60,
+            blocksPerYear: 365 * 24 * 60 * 30,
             baseRatePerYear: ethers.utils.parseEther("0"),
             multiplerPerYear: ethers.utils.parseEther("0.05"),
             jumpMultiplierPerYear: ethers.utils.parseEther("1.365"),
@@ -36,7 +36,7 @@ const func: DeployFunction = async ({
             name: "StableRateModel",
         },
         MediumRateModel: {
-            blocksPerYear: 365 * 24 * 60 * 60,
+            blocksPerYear: 365 * 24 * 60 * 30,
             baseRatePerYear: ethers.utils.parseEther("0.02"),
             multiplerPerYear: ethers.utils.parseEther("0.225"),
             jumpMultiplierPerYear: ethers.utils.parseEther("1.25"),
@@ -45,7 +45,7 @@ const func: DeployFunction = async ({
             name: "MediumRateModel",
         },
         VolatileRateModel: {
-            blocksPerYear: 365 * 24 * 60 * 60,
+            blocksPerYear: 365 * 24 * 60 * 30,
             baseRatePerYear: ethers.utils.parseEther("0.025"),
             multiplerPerYear: ethers.utils.parseEther("0.225"),
             jumpMultiplierPerYear: ethers.utils.parseEther("5"),
