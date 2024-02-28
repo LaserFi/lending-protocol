@@ -128,6 +128,12 @@ contract Comptroller is
     // No collateralFactorMantissa may exceed this value
     uint256 internal constant collateralFactorMaxMantissa = 0.9e18; // 0.9
 
+    // Laser Token
+    address internal LASER;
+
+    // External rewarded
+    address internal REWARDER;
+
     constructor() {
         admin = msg.sender;
     }
@@ -1904,11 +1910,11 @@ contract Comptroller is
     }
 
     /**
-     * @notice Return the address of the SONNE token
-     * @return The address of SONNE
+     * @notice Return the address of the LASER token
+     * @return The address of LASER
      */
     function getCompAddress() public view virtual returns (address) {
-        return 0x1DB2466d9F5e10D7090E7152B68d62703a2245F0;
+        return LASER;
     }
 
     /**
@@ -1921,6 +1927,6 @@ contract Comptroller is
         virtual
         returns (address)
     {
-        return 0x938Ed674a5580c9217612dE99Da8b5d476dCF13f;
+        return REWARDER;
     }
 }
