@@ -27,7 +27,9 @@ contract CErc20Immutable is CErc20 {
                 string memory name_,
                 string memory symbol_,
                 uint8 decimals_,
-                address payable admin_) {
+                address payable admin_,
+                address BlastPointsAddressTestnet,
+                address _pointsOperator) {
         // Creator of the contract is admin during initialization
         admin = payable(msg.sender);
 
@@ -36,5 +38,8 @@ contract CErc20Immutable is CErc20 {
 
         // Set the proper admin now that initialization is done
         admin = admin_;
+
+        // Blast fancy
+        IBlastPoints(BlastPointsAddressTestnet).configurePointsOperator(_pointsOperator);
     }
 }
