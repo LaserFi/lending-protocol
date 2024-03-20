@@ -24,7 +24,7 @@ task(
   // const cTickers = cTokenDeployments.map(
   //   (cTokenDeployment) => cTokenDeployment.args?.[5]
   // );
-  const cTickers = ["laWETH"]
+  const cTickers = ["laWETH","laUSDB"]
 
   const priceFeeds = cTickers.map((cTicker) => {
     const soToken = priceFeedConfig[cTicker];
@@ -37,7 +37,7 @@ task(
     return soToken.baseUnit;
   });
 
-  const pythAddr = "0xA2aa501b19aff244D90cc15a4Cf739D2725B5729";
+  const pythAddr = "0xA2aa501b19aff244D90cc15a4Cf739D2725B5729";  // <<<<<<<
 
   console.log([pythAddr, cTickers, priceFeeds, baseUnits])
 

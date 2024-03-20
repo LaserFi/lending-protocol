@@ -10,7 +10,8 @@ import { task, types } from "hardhat/config";
  * --decimals 8 \
  * --comptroller-key "ComptrollerV1" \
  * --interest-rate-model-key "MediumRateModel" \
- * --owner 0x0
+ * --owner 0x0 \
+ * --admin 0x0
  */
 
 task("deploy-ctoken", "Deploys a new ctoken")
@@ -22,6 +23,7 @@ task("deploy-ctoken", "Deploys a new ctoken")
   .addParam("comptrollerKey", "Key of the comptroller")
   .addParam("interestRateModelKey", "Key of the interest rate model")
   .addParam("owner", "Owner of the cToken")
+  .addParam("admin", "Poits admin")
   .setAction(async (args, hre, runSuper) => {
     const {
       underlyingAddress,
@@ -32,6 +34,7 @@ task("deploy-ctoken", "Deploys a new ctoken")
       comptrollerKey,
       interestRateModelKey,
       owner,
+      admin
     } = args;
     const {
       ethers,
@@ -71,6 +74,7 @@ task("deploy-ctoken", "Deploys a new ctoken")
           soSymbol,
           decimals,
           owner,
+          admin
         ],
       });
     }
