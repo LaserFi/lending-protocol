@@ -24,7 +24,7 @@ task(
   // const cTickers = cTokenDeployments.map(
   //   (cTokenDeployment) => cTokenDeployment.args?.[5]
   // );
-  const cTickers = ["laWETH","laUSDB"]
+  const cTickers = ["laWETH","laETH","laUSDB"]
 
   const priceFeeds = cTickers.map((cTicker) => {
     const soToken = priceFeedConfig[cTicker];
