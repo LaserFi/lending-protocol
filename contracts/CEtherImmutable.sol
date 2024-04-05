@@ -19,28 +19,39 @@ contract CEtherImmutable is CToken {
      * @param decimals_ ERC-20 decimal precision of this token
      * @param admin_ Address of the administrator of this token
      */
-    constructor(ComptrollerInterface comptroller_,
-                InterestRateModel interestRateModel_,
-                uint initialExchangeRateMantissa_,
-                string memory name_,
-                string memory symbol_,
-                uint8 decimals_,
-                address payable admin_,
-                address _pointsOperator) {
+    constructor(
+        ComptrollerInterface comptroller_,
+        InterestRateModel interestRateModel_,
+        uint initialExchangeRateMantissa_,
+        string memory name_,
+        string memory symbol_,
+        uint8 decimals_,
+        address payable admin_,
+        address _pointsOperator
+    ) {
         // Creator of the contract is admin during initialization
         admin = payable(msg.sender);
 
-        initialize(comptroller_, interestRateModel_, initialExchangeRateMantissa_, name_, symbol_, decimals_);
+        initialize(
+            comptroller_,
+            interestRateModel_,
+            initialExchangeRateMantissa_,
+            name_,
+            symbol_,
+            decimals_
+        );
 
         // Set the proper admin now that initialization is done
         admin = admin_;
 
         // Blast fancy config
-        IBlastPoints(0x2fc95838c71e76ec69ff817983BFf17c710F34E0).configurePointsOperator(_pointsOperator);
-        IBlast(0x4300000000000000000000000000000000000002).configureClaimableGas(); 
-        IBlast(0x4300000000000000000000000000000000000002).configureClaimableYield();
+        IBlastPoints(0x2fc95838c71e76ec69ff817983BFf17c710F34E0)
+            .configurePointsOperator(_pointsOperator);
+        IBlast(0x4300000000000000000000000000000000000002)
+            .configureClaimableGas();
+        IBlast(0x4300000000000000000000000000000000000002)
+            .configureClaimableYield();
     }
-
 
     /*** User Interface ***/
 
@@ -75,10 +86,10 @@ contract CEtherImmutable is CToken {
     }
 
     /**
-      * @notice Sender borrows assets from the protocol to their own address
-      * @param borrowAmount The amount of the underlying asset to borrow
-      * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
-      */
+     * @notice Sender borrows assets from the protocol to their own address
+     * @param borrowAmount The amount of the underlying asset to borrow
+     * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
+     */
     function borrow(uint borrowAmount) external returns (uint) {
         borrowInternal(borrowAmount);
         return NO_ERROR;
@@ -108,7 +119,10 @@ contract CEtherImmutable is CToken {
      * @param borrower The borrower of this cToken to be liquidated
      * @param cTokenCollateral The market in which to seize collateral from the borrower
      */
-    function liquidateBorrow(address borrower, CToken cTokenCollateral) external payable {
+    function liquidateBorrow(
+        address borrower,
+        CToken cTokenCollateral
+    ) external payable {
         liquidateBorrowInternal(borrower, msg.value, cTokenCollateral);
     }
 
@@ -134,7 +148,7 @@ contract CEtherImmutable is CToken {
      * @dev This excludes the value of the current message, if any
      * @return The quantity of Ether owned by this contract
      */
-    function getCashPrior() override internal view returns (uint) {
+    function getCashPrior() internal view override returns (uint) {
         return address(this).balance - msg.value;
     }
 
@@ -144,14 +158,20 @@ contract CEtherImmutable is CToken {
      * @param amount Amount of Ether being sent
      * @return The actual amount of Ether transferred
      */
-    function doTransferIn(address from, uint amount) override internal returns (uint) {
+    function doTransferIn(
+        address from,
+        uint amount
+    ) internal override returns (uint) {
         // Sanity checks
         require(msg.sender == from, "sender mismatch");
         require(msg.value == amount, "value mismatch");
         return amount;
     }
 
-    function doTransferOut(address payable to, uint amount) virtual override internal {
+    function doTransferOut(
+        address payable to,
+        uint amount
+    ) internal virtual override {
         /* Send the Ether, with minimal gas and revert on failure */
         to.transfer(amount);
     }
@@ -162,16 +182,23 @@ contract CEtherImmutable is CToken {
      */
     function _claimAllYields(address _receiver) external {
         if (msg.sender != admin) {
-            revert ("Admin check");
+            revert("Admin check");
         }
-        IBlast(0x4300000000000000000000000000000000000002).claimAllYield(address(this), _receiver);
+        IBlast(0x4300000000000000000000000000000000000002).claimAllYield(
+            address(this),
+            _receiver
+        );
     }
 
     /**
      * @notice Admin only blast integration
      */
     function claimYield(address _receiver, uint256 _amount) external {
-		IBlast(0x4300000000000000000000000000000000000002).claimYield(address(this), _receiver, _amount);
+        IBlast(0x4300000000000000000000000000000000000002).claimYield(
+            address(this),
+            _receiver,
+            _amount
+        );
     }
 
     /**
@@ -180,9 +207,12 @@ contract CEtherImmutable is CToken {
      */
     function _claimAllGas(address _receiver) external {
         if (msg.sender != admin) {
-            revert ("Admin check");
+            revert("Admin check");
         }
-        IBlast(0x4300000000000000000000000000000000000002).claimAllGas(address(this), _receiver);
+        IBlast(0x4300000000000000000000000000000000000002).claimAllGas(
+            address(this),
+            _receiver
+        );
     }
 
     /**
@@ -191,8 +221,11 @@ contract CEtherImmutable is CToken {
      */
     function _claimMaxGas(address _receiver) external {
         if (msg.sender != admin) {
-            revert ("Admin check");
+            revert("Admin check");
         }
-        IBlast(0x4300000000000000000000000000000000000002).claimMaxGas(address(this), _receiver);
+        IBlast(0x4300000000000000000000000000000000000002).claimMaxGas(
+            address(this),
+            _receiver
+        );
     }
 }

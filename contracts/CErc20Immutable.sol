@@ -20,31 +20,47 @@ contract CErc20Immutable is CErc20 {
      * @param decimals_ ERC-20 decimal precision of this token
      * @param admin_ Address of the administrator of this token
      */
-    constructor(address underlying_,
-                ComptrollerInterface comptroller_,
-                InterestRateModel interestRateModel_,
-                uint initialExchangeRateMantissa_,
-                string memory name_,
-                string memory symbol_,
-                uint8 decimals_,
-                address payable admin_,
-                address _pointsOperator) {
+    constructor(
+        address underlying_,
+        ComptrollerInterface comptroller_,
+        InterestRateModel interestRateModel_,
+        uint initialExchangeRateMantissa_,
+        string memory name_,
+        string memory symbol_,
+        uint8 decimals_,
+        address payable admin_,
+        address _pointsOperator
+    ) {
         // Creator of the contract is admin during initialization
         admin = payable(msg.sender);
 
         // Initialize the market
-        initialize(underlying_, comptroller_, interestRateModel_, initialExchangeRateMantissa_, name_, symbol_, decimals_);
+        initialize(
+            underlying_,
+            comptroller_,
+            interestRateModel_,
+            initialExchangeRateMantissa_,
+            name_,
+            symbol_,
+            decimals_
+        );
 
         // Set the proper admin now that initialization is done
         admin = admin_;
 
         // Blast fancy config
-        IBlastPoints(0x2fc95838c71e76ec69ff817983BFf17c710F34E0).configurePointsOperator(_pointsOperator);
-        IBlast(0x4300000000000000000000000000000000000002).configureClaimableGas(); 
+        IBlastPoints(0x2fc95838c71e76ec69ff817983BFf17c710F34E0)
+            .configurePointsOperator(_pointsOperator);
+        IBlast(0x4300000000000000000000000000000000000002)
+            .configureClaimableGas();
         // USDB
-        IERC20Rebasing(0x4200000000000000000000000000000000000022).configure(YieldMode.CLAIMABLE);
+        IERC20Rebasing(0x4200000000000000000000000000000000000022).configure(
+            YieldMode.CLAIMABLE
+        );
         // WETH
-        IERC20Rebasing(0x4200000000000000000000000000000000000023).configure(YieldMode.CLAIMABLE);
+        IERC20Rebasing(0x4200000000000000000000000000000000000023).configure(
+            YieldMode.CLAIMABLE
+        );
     }
 
     /**
@@ -53,15 +69,25 @@ contract CErc20Immutable is CErc20 {
      */
     function _claimAllYields(address _receiver) external {
         if (msg.sender != admin) {
-            revert ("Admin check");
+            revert("Admin check");
         }
-        uint256 amountUSDB  = IERC20Rebasing(0x4200000000000000000000000000000000000022).getClaimableAmount(address(this));
+        uint256 amountUSDB = IERC20Rebasing(
+            0x4200000000000000000000000000000000000022
+        ).getClaimableAmount(address(this));
         if (amountUSDB > 0) {
-            IERC20Rebasing(0x4200000000000000000000000000000000000022).claim(_receiver, amountUSDB);
-        } 
-        uint256 amountWETH  = IERC20Rebasing(0x4200000000000000000000000000000000000023).getClaimableAmount(address(this));
+            IERC20Rebasing(0x4200000000000000000000000000000000000022).claim(
+                _receiver,
+                amountUSDB
+            );
+        }
+        uint256 amountWETH = IERC20Rebasing(
+            0x4200000000000000000000000000000000000023
+        ).getClaimableAmount(address(this));
         if (amountWETH > 0) {
-        IERC20Rebasing(0x4200000000000000000000000000000000000022).claim(_receiver, amountWETH);
+            IERC20Rebasing(0x4200000000000000000000000000000000000022).claim(
+                _receiver,
+                amountWETH
+            );
         }
     }
 
@@ -71,9 +97,12 @@ contract CErc20Immutable is CErc20 {
      */
     function _claimAllGas(address _receiver) external {
         if (msg.sender != admin) {
-            revert ("Admin check");
+            revert("Admin check");
         }
-        IBlast(0x4300000000000000000000000000000000000002).claimAllGas(address(this), _receiver);
+        IBlast(0x4300000000000000000000000000000000000002).claimAllGas(
+            address(this),
+            _receiver
+        );
     }
 
     /**
@@ -82,8 +111,11 @@ contract CErc20Immutable is CErc20 {
      */
     function _claimMaxGas(address _receiver) external {
         if (msg.sender != admin) {
-            revert ("Admin check");
+            revert("Admin check");
         }
-        IBlast(0x4300000000000000000000000000000000000002).claimMaxGas(address(this), _receiver);
+        IBlast(0x4300000000000000000000000000000000000002).claimMaxGas(
+            address(this),
+            _receiver
+        );
     }
 }
