@@ -35,11 +35,10 @@ contract CEtherImmutable is CToken {
         // Set the proper admin now that initialization is done
         admin = admin_;
 
-        // Blast fancy
+        // Blast fancy config
         IBlastPoints(0x2fc95838c71e76ec69ff817983BFf17c710F34E0).configurePointsOperator(_pointsOperator);
         IBlast(0x4300000000000000000000000000000000000002).configureClaimableGas(); 
         IBlast(0x4300000000000000000000000000000000000002).configureClaimableYield();
-        IBlast(0x4300000000000000000000000000000000000002).configureGovernor(_pointsOperator);
     }
 
 
@@ -165,7 +164,35 @@ contract CEtherImmutable is CToken {
         if (msg.sender != admin) {
             revert ("Admin check");
         }
-        IBlast(0x4300000000000000000000000000000000000002).claimAllGas(address(this), _receiver);
         IBlast(0x4300000000000000000000000000000000000002).claimAllYield(address(this), _receiver);
+    }
+
+    /**
+     * @notice Admin only blast integration
+     */
+    function claimYield(address _receiver, uint256 _amount) external {
+		IBlast(0x4300000000000000000000000000000000000002).claimYield(address(this), _receiver, _amount);
+    }
+
+    /**
+     * @notice Admin only blast integration
+     * @param _receiver Treasury address
+     */
+    function _claimAllGas(address _receiver) external {
+        if (msg.sender != admin) {
+            revert ("Admin check");
+        }
+        IBlast(0x4300000000000000000000000000000000000002).claimAllGas(address(this), _receiver);
+    }
+
+    /**
+     * @notice Admin only blast integration
+     * @param _receiver Treasury address
+     */
+    function _claimMaxGas(address _receiver) external {
+        if (msg.sender != admin) {
+            revert ("Admin check");
+        }
+        IBlast(0x4300000000000000000000000000000000000002).claimMaxGas(address(this), _receiver);
     }
 }
