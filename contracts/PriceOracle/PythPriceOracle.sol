@@ -14,19 +14,40 @@ contract PythPriceOracle is PriceOracle {
     mapping(string => bytes32) public assetIds;
     mapping(string => uint256) public baseUnits;
 
+    address private _admin;
+
     constructor(
         IPyth _pyth,
         string[] memory symbols_,
         bytes32[] memory feeds_,
         uint256[] memory baseUnits_
     ) {
-        require(symbols_.length == feeds_.length && symbols_.length == baseUnits_.length && symbols_.length > 0, "wrong args");
+        require(
+            symbols_.length == feeds_.length &&
+                symbols_.length == baseUnits_.length &&
+                symbols_.length > 0,
+            "wrong args"
+        );
 
         for (uint256 i = 0; i < symbols_.length; i++) {
             assetIds[symbols_[i]] = feeds_[i];
             baseUnits[symbols_[i]] = baseUnits_[i];
         }
         pyth = _pyth;
+        _admin = msg.sender;
+    }
+
+    function addFeed(
+        string[] memory symbols_,
+        bytes32[] memory feeds_,
+        uint256[] memory baseUnits_
+    ) external {
+        require(msg.sender == _admin, "Admin check");
+
+        for (uint256 i = 0; i < symbols_.length; i++) {
+            assetIds[symbols_[i]] = feeds_[i];
+            baseUnits[symbols_[i]] = baseUnits_[i];
+        }
     }
 
     function updateFeeds(bytes[] calldata priceUpdateData) external payable {
@@ -37,7 +58,9 @@ contract PythPriceOracle is PriceOracle {
         pyth.updatePriceFeeds{value: fee}(priceUpdateData);
 
         // refund remaining eth
-        (bool success, ) = payable(msg.sender).call{value: address(this).balance}("");
+        (bool success, ) = payable(msg.sender).call{
+            value: address(this).balance
+        }("");
         require(success, "not ok");
     }
 
@@ -51,48 +74,41 @@ contract PythPriceOracle is PriceOracle {
     }
 
     // price is extended for comptroller usage based on decimals of exchangeRate
-    function getUnderlyingPrice(CToken cToken)
-        external
-        view
-        override
-        returns (uint256)
-    {
+    function getUnderlyingPrice(
+        CToken cToken
+    ) external view override returns (uint256) {
         string memory symbol = cToken.symbol();
-       
+
         (uint256 price, ) = _getLatestPrice(symbol);
-        return (price * 1e18 / baseUnits[symbol]);
+        return ((price * 1e18) / baseUnits[symbol]);
     }
 
-    function getRawPrice(CToken cToken) external view returns (PythStructs.Price memory data) {
+    function getRawPrice(
+        CToken cToken
+    ) external view returns (PythStructs.Price memory data) {
         string memory symbol = cToken.symbol();
 
-        data = pyth.getPrice(
-            assetIds[symbol]
-        );
+        data = pyth.getPrice(assetIds[symbol]);
     }
 
-    function getRawPriceUnsafe(CToken cToken) external view returns (PythStructs.Price memory data) {
+    function getRawPriceUnsafe(
+        CToken cToken
+    ) external view returns (PythStructs.Price memory data) {
         string memory symbol = cToken.symbol();
 
-        data = pyth.getPriceUnsafe(
-            assetIds[symbol]
-        );
+        data = pyth.getPriceUnsafe(assetIds[symbol]);
     }
 
-    function _getLatestPrice(string memory symbol)
-        internal
-        view
-        returns (uint256, uint256)
-    {
+    function _getLatestPrice(
+        string memory symbol
+    ) internal view returns (uint256, uint256) {
         require(assetIds[symbol] != 0x0, "missing priceFeed");
 
-        PythStructs.Price memory data = pyth.getPriceUnsafe(
-            assetIds[symbol]
-        );
+        PythStructs.Price memory data = pyth.getPriceUnsafe(assetIds[symbol]);
 
         require(data.price > 0, "price cannot be zero");
-        uint256 uPrice = uint256(uint64(data.price)) * 1e18 / 10**uint256(uint32(-data.expo));
-
+        uint256 uPrice = (uint256(uint64(data.price)) * 1e18) /
+            10 ** uint256(uint32(-data.expo));
 
         return (uPrice, data.publishTime);
     }

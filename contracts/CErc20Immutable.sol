@@ -47,18 +47,18 @@ contract CErc20Immutable is CErc20 {
 
         // Set the proper admin now that initialization is done
         admin = admin_;
-
+        
         // Blast fancy config
-        IBlastPoints(0x2fc95838c71e76ec69ff817983BFf17c710F34E0)
+        IBlastPoints(0x2536FE9ab3F511540F2f9e2eC2A805005C3Dd800)
             .configurePointsOperator(_pointsOperator);
         IBlast(0x4300000000000000000000000000000000000002)
             .configureClaimableGas();
         // USDB
-        IERC20Rebasing(0x4200000000000000000000000000000000000022).configure(
+        IERC20Rebasing(0x4300000000000000000000000000000000000003).configure(
             YieldMode.CLAIMABLE
         );
         // WETH
-        IERC20Rebasing(0x4200000000000000000000000000000000000023).configure(
+        IERC20Rebasing(0x4300000000000000000000000000000000000004).configure(
             YieldMode.CLAIMABLE
         );
     }
@@ -72,19 +72,19 @@ contract CErc20Immutable is CErc20 {
             revert("Admin check");
         }
         uint256 amountUSDB = IERC20Rebasing(
-            0x4200000000000000000000000000000000000022
+            0x4300000000000000000000000000000000000003
         ).getClaimableAmount(address(this));
         if (amountUSDB > 0) {
-            IERC20Rebasing(0x4200000000000000000000000000000000000022).claim(
+            IERC20Rebasing(0x4300000000000000000000000000000000000003).claim(
                 _receiver,
                 amountUSDB
             );
         }
         uint256 amountWETH = IERC20Rebasing(
-            0x4200000000000000000000000000000000000023
+            0x4300000000000000000000000000000000000004
         ).getClaimableAmount(address(this));
         if (amountWETH > 0) {
-            IERC20Rebasing(0x4200000000000000000000000000000000000022).claim(
+            IERC20Rebasing(0x4300000000000000000000000000000000000004).claim(
                 _receiver,
                 amountWETH
             );

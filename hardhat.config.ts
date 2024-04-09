@@ -10,28 +10,38 @@ import "hardhat-deploy";
 import "hardhat-deploy-ethers";
 import { HardhatUserConfig } from "hardhat/config";
 import "solidity-coverage";
-
 import "./tasks";
 
 /** @type import('hardhat/config').HardhatUserConfig */
 const config: HardhatUserConfig = {
     etherscan: {
-        apiKey: {
-          blast_sepolia: "blast_sepolia", // apiKey is not required, just set a placeholder
-        },
+        apiKey: process.env.BLAST_ETHERSCAN_KEY!,
         customChains: [
-          {
-            network: "blast_sepolia",
-            chainId: 168587773,
-            urls: {
-              apiURL: "https://api.routescan.io/v2/network/testnet/evm/168587773/etherscan",
-              browserURL: "https://testnet.blastscan.io"
-            }
-          }
-        ]
-      },
+            {
+                network: "blast_sepolia",
+                chainId: 168587773,
+                urls: {
+                    apiURL: "https://api.routescan.io/v2/network/testnet/evm/168587773/etherscan",
+                    browserURL: "https://testnet.blastscan.io",
+                },
+            },
+            {
+                network: "blast",
+                chainId: 81457,
+                urls: {
+                    apiURL: "https://api.routescan.io/v2/network/mainnet/evm/81457/etherscan",
+                    browserURL: "https://blastexplorer.io",
+                },
+            },
+        ],
+    },
     networks: {
         blast_sepolia: {
+            url: process.env.SEPOLIA_RPC_URL!,
+            //ovm: true,
+            accounts: [process.env.BLAST_DEPLOYER_KEY!],
+        },
+        blast: {
             url: process.env.BLAST_RPC_URL!,
             //ovm: true,
             accounts: [process.env.BLAST_DEPLOYER_KEY!],
@@ -44,7 +54,7 @@ const config: HardhatUserConfig = {
             companionNetworks: {
                 mainnet: "blast_sepolia",
             },
-            autoImpersonate: true
+            autoImpersonate: true,
         },
     },
     solidity: {
